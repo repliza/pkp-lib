@@ -197,10 +197,10 @@ msgstr "Inhalte oder Einstellungen importieren oder exportieren"
 msgid "grid.action.orderItems"
 msgstr "Sortiermodus aktivieren"
 
-msgid "grid.action.editSubmissionChecklist"
+msgid "grid.action.editCustomChecklist"
 msgstr "Dieses Element der Checkliste bearbeiten"
 
-msgid "grid.action.deleteSubmissionChecklist"
+msgid "grid.action.deleteCustomChecklist"
 msgstr "Dieses Element der Checkliste löschen"
 
 msgid "grid.action.resetAll"
@@ -407,7 +407,7 @@ msgstr "Beiträger/in löschen"
 msgid "grid.reviewForm.title"
 msgstr "Begutachtungsformulare"
 
-msgid "grid.reviewFormElement.responseItems"
+msgid "grid.customFormElement.responseItems"
 msgstr "Antwortmöglichkeiten"
 
 msgid "grid.noFiles"
@@ -434,7 +434,7 @@ msgstr "Produktionsvorlagenbibliothek"
 msgid "grid.submissionChecklist.title"
 msgstr "Checkliste für Einreichungen"
 
-msgid "grid.submissionChecklist.column.checklistItem"
+msgid "grid.customChecklist.column.checklistItem"
 msgstr "Eintrag auf Checkliste"
 
 msgid "author.users.contributor.name"

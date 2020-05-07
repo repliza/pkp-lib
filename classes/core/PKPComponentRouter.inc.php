@@ -57,7 +57,7 @@ define ('COMPONENT_ROUTER_PARTS_MAXDEPTH', 9);
 
 // This is the maximum/minimum length of the name of a sub-directory or
 // handler class name.
-define ('COMPONENT_ROUTER_PARTS_MAXLENGTH', 50);
+define ('COMPONENT_ROUTER_PARTS_MAXLENGTH', 57);
 define ('COMPONENT_ROUTER_PARTS_MINLENGTH', 2);
 
 import('lib.pkp.classes.core.PKPRouter');

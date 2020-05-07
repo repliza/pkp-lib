@@ -35,6 +35,7 @@
 
 		this.parent($tabs, options);
 
+		this.submissionSteps_ = options.submissionSteps;
 		this.submissionProgress_ = options.submissionProgress;
 		this.cancelUrl_ = options.cancelUrl;
 		this.cancelConfirmText_ = options.cancelConfirmText;
@@ -44,7 +45,7 @@
 		this.bind('formCanceled', this.formCanceledHandler);
 
 		this.getHtmlElement().tabs('option', 'disabled',
-				this.getDisabledSteps(this.submissionProgress_));
+				this.getDisabledSteps(this.submissionSteps_, this.submissionProgress_));
 	};
 	$.pkp.classes.Helper.inherits(
 			$.pkp.pages.submission.SubmissionTabHandler,
@@ -54,6 +55,15 @@
 	//
 	// Private Properties
 	//
+	/**
+	 * The submission steps
+	 * @private
+	 * @type {Array}
+	 */
+	$.pkp.pages.submission.SubmissionTabHandler.
+			prototype.submissionSteps_ = null;
+
+
 	/**
 	 * The submission's progress
 	 * @private
@@ -97,8 +107,11 @@
 			setStepHandler = function(sourceElement, event, submissionProgress) {
 
 		this.getHtmlElement().tabs('option', 'disabled',
-				this.getDisabledSteps(submissionProgress));
-		this.getHtmlElement().tabs('option', 'active', submissionProgress - 1);
+				this.getDisabledSteps(this.submissionSteps_, submissionProgress));
+
+		var submissionProgressInt = parseInt(submissionProgress, 10),
+				nextStepTabIndex = this.submissionSteps_.indexOf(submissionProgressInt);
+		this.getHtmlElement().tabs('option', 'active', nextStepTabIndex);
 	};
 
 
@@ -121,22 +134,42 @@
 	/**
 	 * Get a list of permitted tab indexes for the given submission step
 	 * number.
+	 * @param {Array} submissionSteps The submission steps
 	 * @param {number} submissionProgress The submission step number (1-based) or
 	 * 0 for completion.
 	 * @return {Object} An array of permissible tab indexes (0-based).
 	 */
 	$.pkp.pages.submission.SubmissionTabHandler.prototype.
-			getDisabledSteps = function(submissionProgress) {
+			getDisabledSteps = function(submissionSteps, submissionProgress) {
 
-		switch (parseInt(submissionProgress, 10)) {
-			case 0: return []; // Completed
-			case 1: return [1, 2, 3, 4, 5];
-			case 2: return [2, 3, 4, 5];
-			case 3: return [3, 4, 5];
-			case 4: return [4, 5];
-			case 5: return [];
+		var submissionProgressInt = parseInt(submissionProgress, 10),
+				lastStepNumber = null,
+				currentTabIndex = -1,
+				i = -1,
+				result = [];
+
+		if (submissionProgressInt == 0) {
+			return []; // Completed
 		}
-		throw new Error('Illegal submission step number!');
+
+		if (submissionSteps.length > 0) {
+			lastStepNumber = submissionSteps[submissionSteps.length - 1];
+		}
+
+		if (submissionProgressInt == lastStepNumber) {
+			return [];
+		}
+
+		currentTabIndex = submissionSteps.indexOf(submissionProgressInt);
+		if (currentTabIndex != -1) {
+			for (i = currentTabIndex + 1; i < submissionSteps.length; ++i) {
+				result.push(i);
+			}
+
+			return result;
+		} else {
+			throw new Error('Illegal submission step number!');
+		}
 	};
 
 

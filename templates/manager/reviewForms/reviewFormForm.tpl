@@ -16,20 +16,20 @@
 	{rdelim});
 </script>
 
-<form class="pkp_form" id="reviewFormForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.settings.reviewForms.ReviewFormGridHandler" op="updateReviewForm"}">
+<form class="pkp_form" id="reviewFormForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.settings.reviewForms.ReviewFormGridHandler" op="updateCustomForm"}">
 	{csrf}
 
-	{if $reviewFormId}
-		{fbvElement id="reviewFormId" type="hidden" name="reviewFormId" value=$reviewFormId}
+	{if $customFormId}
+		{fbvElement id="customFormId" type="hidden" name="customFormId" value=$customFormId}
 	{/if}
 
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="reviewFormsNotification"}
 
 	{fbvFormArea id="reviewFormForm"}
-		{fbvFormSection title="manager.reviewForms.title" required=true for="title"}
+		{fbvFormSection title="manager.customForms.title" required=true for="title"}
 			{fbvElement type="text" id="title" value=$title multilingual=true required=true}
 		{/fbvFormSection}
-		{fbvFormSection title="manager.reviewForms.description" for="description"}
+		{fbvFormSection title="manager.customForms.description" for="description"}
 			{fbvElement type="textarea" id="description" value=$description multilingual=true rich=true}
 		{/fbvFormSection}
 		<p><span class="formRequired">{translate key="common.requiredField"}</span></p>

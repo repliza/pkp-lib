@@ -12,26 +12,9 @@
  * @brief Review form element response item listbuilder grid handler.
  */
 
-import('lib.pkp.classes.controllers.grid.GridCellProvider');
+import('lib.pkp.controllers.listbuilder.settings.customForms.CustomFormElementResponseItemListbuilderGridCellProvider');
 
-class ReviewFormElementResponseItemListbuilderGridCellProvider extends GridCellProvider {
-
-	//
-	// Template methods from GridCellProvider
-	//
-	/**
-	 * @see GridCellProvider::getTemplateVarsFromRowColumn()
-	 */
-	function getTemplateVarsFromRowColumn($row, $column) {
-		switch ($column->getId()) {
-			case 'possibleResponse':
-				$possibleResponse = $row->getData();
-				$contentColumn = $possibleResponse[0];
-				$content = $contentColumn['content'];
-				return array('label' => $content);
-		}
-		assert(false);
-	}
+class ReviewFormElementResponseItemListbuilderGridCellProvider extends CustomFormElementResponseItemListbuilderGridCellProvider {
 }
 
 

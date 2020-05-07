@@ -190,6 +190,9 @@ msgstr ""
 "\t\tsearch results. Please select one of the configured metrics as a default.\n"
 "\t"
 
+msgid "admin.settings.homeFooterImage.altText"
+msgstr "Site footer logo"
+
 msgid "admin.settings.introduction"
 msgstr "Introduction"
 

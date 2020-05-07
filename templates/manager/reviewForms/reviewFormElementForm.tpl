@@ -30,22 +30,22 @@ function togglePossibleResponses(newValue, multipleResponsesElementTypesString) 
 // -->
 </script>
 
-<form class="pkp_form" id="reviewFormElementForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.settings.reviewForms.ReviewFormElementsGridHandler" op="updateReviewFormElement" anchor="possibleResponses"}">
+<form class="pkp_form" id="reviewFormElementForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT component="grid.settings.reviewForms.ReviewFormElementsGridHandler" op="updateCustomFormElement" anchor="possibleResponses"}">
 	{csrf}
-	{fbvElement id="reviewFormId" type="hidden" name="reviewFormId" value=$reviewFormId}
-	{fbvElement id="reviewFormElementId" type="hidden" name="reviewFormElementId" value=$reviewFormElementId}
+	{fbvElement id="customFormId" type="hidden" name="customFormId" value=$customFormId}
+	{fbvElement id="customFormElementId" type="hidden" name="customFormElementId" value=$customFormElementId}
 
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="reviewFormElementsNotification"}
 
 	{fbvFormArea id="reviewFormElementForm"}
 
 		<!-- question -->
-		{fbvFormSection title="manager.reviewFormElements.question" required=true for="question"}
+		{fbvFormSection title="manager.customFormElements.question" required=true for="question"}
 			{fbvElement type="textarea" id="question" value=$question multilingual=true rich=true}
 		{/fbvFormSection}
 
 		<!-- description -->
-		{fbvFormSection title="manager.reviewFormElements.description" for="description"}
+		{fbvFormSection title="manager.customFormElements.description" for="description"}
 			{fbvElement type="textarea" id="description" value=$description multilingual=true rich=true}
 		{/fbvFormSection}
 
@@ -56,7 +56,7 @@ function togglePossibleResponses(newValue, multipleResponsesElementTypesString) 
 			{else}
 				{assign var="checked" value=false}
 			{/if}
-			{fbvElement type="checkbox" id="required" label="manager.reviewFormElements.required" checked=$checked inline="true"}
+			{fbvElement type="checkbox" id="required" label="$requiredCheckboxLabel" checked=$checked inline="true"}
 		{/fbvFormSection}
 
 		<!-- included in message to author checkbox -->
@@ -66,7 +66,7 @@ function togglePossibleResponses(newValue, multipleResponsesElementTypesString) 
 			{else}
 				{assign var="checked" value=false}
 			{/if}
-			{fbvElement type="checkbox" id="included" label="manager.reviewFormElements.included" checked=$checked inline="true"}
+			{fbvElement type="checkbox" id="included" label="$includedCheckboxLabel" checked=$checked inline="true"}
 		{/fbvFormSection}
 
 		<!-- element type drop-down -->
@@ -74,13 +74,13 @@ function togglePossibleResponses(newValue, multipleResponsesElementTypesString) 
 			<!-- when user makes a selection (onchange), warn them if necessary. -->
 			<!-- also display/hide options list builder if appropriate. -->
 			<!-- look to see how this is done elsewhere under the new JS framework -->
-			{fbvElement type="select" label="manager.reviewFormElements.elementType" id="elementType" defaultLabel="" from=$reviewFormElementTypeOptions selected=$elementType size=$fbvStyles.size.MEDIUM required=true}
+			{fbvElement type="select" label="manager.customFormElements.elementType" id="elementType" defaultLabel="" from=$customFormElementTypeOptions selected=$elementType size=$fbvStyles.size.MEDIUM required=true}
 		{/fbvFormSection}
 
 		<!-- Options listbuilder. Activated for some element types. -->
 		<div id="elementOptions" class="full left">
 			<div id="elementOptionsContainer" class="full left">
-				{capture assign=elementOptionsUrl}{url router=$smarty.const.ROUTE_COMPONENT component="listbuilder.settings.reviewForms.ReviewFormElementResponseItemListbuilderHandler" op="fetch" reviewFormId=$reviewFormId reviewFormElementId=$reviewFormElementId escape=false}{/capture}
+				{capture assign=elementOptionsUrl}{url router=$smarty.const.ROUTE_COMPONENT component="$customFormElementResponseItemListbuilderHandler" op="fetch" customFormId=$customFormId customFormElementId=$customFormElementId assocType=$assocType assocId=$assocId escape=false}{/capture}
 				{load_url_in_div id="elementOptionsListbuilderContainer" url=$elementOptionsUrl}
 			</div>
 		</div>

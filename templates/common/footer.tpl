@@ -13,8 +13,26 @@
 
 <div class="pkp_structure_footer" role="contentinfo">
 	<div class="pkp_brand_footer">
-		<a href="{$pkpLink}">
-			<img alt="{translate key="common.publicKnowledgeProject"|default:''}" src="{$baseUrl}/{$brandImage}">
+		{assign var="pageFooterLogoLink" value=$pkpLink}
+		{capture assign="pageFooterLogoImgAltText"}{translate key="common.publicKnowledgeProject"|default:''}{/capture}
+		{assign var="pageFooterLogoImgSrcBaseUrl" value=$baseUrl}
+		{assign var="pageFooterLogoImgSrcFile" value=$brandImage}
+
+		{if $displayPageFooterLogoLinkUrl}
+			{assign var="pageFooterLogoLink" value=$displayPageFooterLogoLinkUrl}
+		{/if}
+
+		{if $displayPageFooterLogo && is_array($displayPageFooterLogo)}
+			{if $displayPageFooterLogo.altText != ''}
+				{assign var="pageFooterLogoImgAltText" value=$displayPageFooterLogo.altText}
+			{/if}
+
+			{assign var="pageFooterLogoImgSrcBaseUrl" value=$publicFilesDir}
+			{capture assign="pageFooterLogoImgSrcFile"}{$displayPageFooterLogo.uploadName|escape:"url"}{/capture}
+		{/if}
+
+		<a href="{$pageFooterLogoLink}">
+			<img alt="{$pageFooterLogoImgAltText|escape}" src="{$pageFooterLogoImgSrcBaseUrl}/{$pageFooterLogoImgSrcFile}">
 		</a>
 	</div>
 </div>

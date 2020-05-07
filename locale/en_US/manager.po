@@ -736,6 +736,12 @@ msgstr "Page Footer"
 msgid "manager.setup.pageFooter.description"
 msgstr "Enter any images, text or HTML code that you'd like to appear at the bottom of your website."
 
+msgid "manager.setup.pageFooterLogoImage"
+msgstr "Page Footer Logo"
+
+msgid "manager.setup.pageFooterLogoImageLinkUrl"
+msgstr "Page Footer Logo Link URL"
+
 msgid "manager.setup.peerReview.description"
 msgstr "Outline the peer review policy and processes for readers and authors. This description often includes the number of reviewers typically used in reviewing a submission, the criteria by which reviewers are asked to judge submissions, expected time required to conduct the reviews, and the principles used to select reviewers."
 
@@ -1260,6 +1266,99 @@ msgstr "Distribution"
 
 msgid "manager.distribution.title"
 msgstr "Distribution Settings"
+
+msgid "manager.customForms"
+msgstr "Custom Forms"
+
+msgid "manager.customFormElement.changeType"
+msgstr "Changing the form item type..."
+
+msgid "manager.customFormElements"
+msgstr "Form Items"
+
+msgid "manager.customFormElements.checkboxes"
+msgstr "Checkboxes (you can choose one or more)"
+
+msgid "manager.customFormElements.chooseType"
+msgstr "Choose item type"
+
+msgid "manager.customFormElements.confirmDelete"
+msgstr "Confirm delete of form item..."
+
+msgid "manager.customFormElements.create"
+msgstr "Create New Item"
+
+msgid "manager.customFormElements.dropdownbox"
+msgstr "Drop-down box"
+
+msgid "manager.customFormElements.elementType"
+msgstr "Item type"
+
+msgid "manager.customFormElements.form.elementTypeRequired"
+msgstr "An item type is required for the form item."
+
+msgid "manager.customFormElements.form.questionRequired"
+msgstr "A question is required for the form item."
+
+msgid "manager.customFormElements.question"
+msgstr "Item"
+
+msgid "manager.customFormElements.description"
+msgstr "Description"
+
+msgid "manager.customFormElements.possibleResponse"
+msgstr "Selection"
+
+msgid "manager.customFormElements.radiobuttons"
+msgstr "Radio buttons (you can only choose one)"
+
+msgid "manager.customFormElements.required"
+msgstr "Item is a required item"
+
+msgid "manager.customFormElements.included"
+msgstr "Item is included"
+
+msgid "manager.customFormElements.smalltextfield"
+msgstr "Single word text box"
+
+msgid "manager.customFormElements.textarea"
+msgstr "Extended text box"
+
+msgid "manager.customFormElements.textfield"
+msgstr "Single line text box"
+
+msgid "manager.customForms.confirmCopy"
+msgstr "Are you sure you wish to create a copy of this form?"
+
+msgid "manager.customForms.confirmDelete"
+msgstr "Are you sure you wish to delete this form?"
+
+msgid "manager.customForms.create"
+msgstr "Create Custom Form"
+
+msgid "manager.customForms.edit"
+msgstr "Edit Custom Form"
+
+msgid "manager.customForms.form.titleRequired"
+msgstr "A title is required for the form."
+
+msgid "manager.customForms.preview"
+msgstr "Preview Form"
+
+msgid "manager.customFormElements"
+msgstr "Form Items"
+
+msgid "manager.customForms.confirmActivate"
+msgstr "Are you sure you wish to activate this form?"
+
+msgid "manager.customForms.confirmDeactivate"
+msgstr "Are you sure you wish to deactivate this form?"
+
+msgid "manager.customForms.title"
+msgstr "Title"
+
+msgid "manager.customForms.description"
+msgstr "Description and Instructions"
 
 msgid "manager.reviewForms"
 msgstr "Review Forms"

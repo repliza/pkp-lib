@@ -488,6 +488,12 @@ class PKPEditorDecisionHandler extends Handler {
 				);
 			}
 
+			// Needed to update review round status notifications.
+			$jsonResult = DAO::getDataChangedEvent();
+
+			HookRegistry::call(strtolower_codesafe(get_class($this)) . '::editorDecisionSaved',
+				array($this, $request, $submission, $decision, $jsonResult));
+
 			if ($redirectOp) {
 				$dispatcher = $this->getDispatcher();
 				$redirectUrl = $dispatcher->url($request, ROUTE_PAGE, null, 'workflow', $redirectOp, array($submission->getId()));
@@ -499,8 +505,8 @@ class PKPEditorDecisionHandler extends Handler {
 					return $request->redirectUrlJson($redirectUrl);
 
 				} else {
-					// Needed to update review round status notifications.
-					return DAO::getDataChangedEvent();
+					// note: DAO call moved before hook call 'editorDecisionSaved'
+					return $jsonResult;
 				}
 			}
 		} else {

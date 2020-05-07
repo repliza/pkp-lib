@@ -89,6 +89,8 @@ class EditorAction {
 			$eventType = $recommendation ? SUBMISSION_LOG_EDITOR_RECOMMENDATION : SUBMISSION_LOG_EDITOR_DECISION;
 			$logKey = $recommendation ? 'log.editor.recommendation' : 'log.editor.decision';
 			SubmissionLog::logEvent($request, $submission, $eventType, $logKey, array('editorName' => $user->getFullName(), 'submissionId' => $submission->getId(), 'decision' => __($decisionLabels[$decision])));
+
+			HookRegistry::call('EditorAction::recordDecisionSuccess', array($submission, $editorDecision, &$result, $recommendation, $request));
 		}
 		return $result;
 	}

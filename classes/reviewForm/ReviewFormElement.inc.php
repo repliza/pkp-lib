@@ -15,106 +15,20 @@
  *
  */
 
-define('REVIEW_FORM_ELEMENT_TYPE_SMALL_TEXT_FIELD',	0x000001);
-define('REVIEW_FORM_ELEMENT_TYPE_TEXT_FIELD',		0x000002);
-define('REVIEW_FORM_ELEMENT_TYPE_TEXTAREA',		0x000003);
-define('REVIEW_FORM_ELEMENT_TYPE_CHECKBOXES',		0x000004);
-define('REVIEW_FORM_ELEMENT_TYPE_RADIO_BUTTONS',	0x000005);
-define('REVIEW_FORM_ELEMENT_TYPE_DROP_DOWN_BOX',	0x000006);
+import('lib.pkp.classes.customForm.CustomFormElement');
 
-class ReviewFormElement extends DataObject {
+define('REVIEW_FORM_ELEMENT_TYPE_SMALL_TEXT_FIELD',	CUSTOM_FORM_ELEMENT_TYPE_SMALL_TEXT_FIELD);
+define('REVIEW_FORM_ELEMENT_TYPE_TEXT_FIELD',		CUSTOM_FORM_ELEMENT_TYPE_TEXT_FIELD);
+define('REVIEW_FORM_ELEMENT_TYPE_TEXTAREA',		CUSTOM_FORM_ELEMENT_TYPE_TEXTAREA);
+define('REVIEW_FORM_ELEMENT_TYPE_CHECKBOXES',		CUSTOM_FORM_ELEMENT_TYPE_CHECKBOXES);
+define('REVIEW_FORM_ELEMENT_TYPE_RADIO_BUTTONS',	CUSTOM_FORM_ELEMENT_TYPE_RADIO_BUTTONS);
+define('REVIEW_FORM_ELEMENT_TYPE_DROP_DOWN_BOX',	CUSTOM_FORM_ELEMENT_TYPE_DROP_DOWN_BOX);
 
-	/**
-	 * Get localized question.
-	 * @return string
-	 */
-	function getLocalizedQuestion() {
-		return $this->getLocalizedData('question');
-	}
-
-	/**
-	 * Get localized description.
-	 * @return string
-	 */
-	function getLocalizedDescription() {
-		return $this->getLocalizedData('description');
-	}
-
-	/**
-	 * Get localized list of possible responses.
-	 * @return array
-	 */
-	function getLocalizedPossibleResponses() {
-		return $this->getLocalizedData('possibleResponses');
-	}
+class ReviewFormElement extends CustomFormElement {
 
 	//
 	// Get/set methods
 	//
-
-	/**
-	 * Get the review form ID of the review form element.
-	 * @return int
-	 */
-	function getReviewFormId() {
-		return $this->getData('reviewFormId');
-	}
-
-	/**
-	 * Set the review form ID of the review form element.
-	 * @param $reviewFormId int
-	 */
-	function setReviewFormId($reviewFormId) {
-		$this->setData('reviewFormId', $reviewFormId);
-	}
-
-	/**
-	 * Get sequence of review form element.
-	 * @return float
-	 */
-	function getSequence() {
-		return $this->getData('sequence');
-	}
-
-	/**
-	 * Set sequence of review form element.
-	 * @param $sequence float
-	 */
-	function setSequence($sequence) {
-		$this->setData('sequence', $sequence);
-	}
-
-	/**
-	 * Get the type of the review form element.
-	 * @return string
-	 */
-	function getElementType() {
-		return $this->getData('reviewFormElementType');
-	}
-
-	/**
-	 * Set the type of the review form element.
-	 * @param $reviewFormElementType string
-	 */
-	function setElementType($reviewFormElementType) {
-		$this->setData('reviewFormElementType', $reviewFormElementType);
-	}
-
-	/**
-	 * Get required flag
-	 * @return boolean
-	 */
-	function getRequired() {
-		return $this->getData('required');
-	}
-
-	/**
-	 * Set required flag
-	 * @param $viewable boolean
-	 */
-	function setRequired($required) {
-		$this->setData('required', $required);
-	}
 
 	/**
 	 * get included
@@ -131,87 +45,5 @@ class ReviewFormElement extends DataObject {
 	function setIncluded($included) {
 		$this->setData('included', $included);
 	}
-
-	/**
-	 * Get question.
-	 * @param $locale string
-	 * @return string
-	 */
-	function getQuestion($locale) {
-		return $this->getData('question', $locale);
-	}
-
-	/**
-	 * Set question.
-	 * @param $question string
-	 * @param $locale string
-	 */
-	function setQuestion($question, $locale) {
-		$this->setData('question', $question, $locale);
-	}
-
-	/**
-	 * Get description.
-	 * @param $locale string
-	 * @return string
-	 */
-	function getDescription($locale) {
-		return $this->getData('description', $locale);
-	}
-
-	/**
-	 * Set description.
-	 * @param $description string
-	 * @param $locale string
-	 */
-	function setDescription($description, $locale) {
-		$this->setData('description', $description, $locale);
-	}
-
-	/**
-	 * Get possible response.
-	 * @param $locale string
-	 * @return string
-	 */
-	function getPossibleResponses($locale) {
-		return $this->getData('possibleResponses', $locale);
-	}
-
-	/**
-	 * Set possibleResponse.
-	 * @param $possibleResponse string
-	 * @param $locale string
-	 */
-	function setPossibleResponses($possibleResponses, $locale) {
-		$this->setData('possibleResponses', $possibleResponses, $locale);
-	}
-
-	/**
-	 * Get an associative array matching review form element type codes with locale strings.
-	 * (Includes default '' => "Choose One" string.)
-	 * @return array reviewFormElementType => localeString
-	 */
-	function &getReviewFormElementTypeOptions() {
-		static $reviewFormElementTypeOptions = array(
-			'' => 'manager.reviewFormElements.chooseType',
-			REVIEW_FORM_ELEMENT_TYPE_SMALL_TEXT_FIELD => 'manager.reviewFormElements.smalltextfield',
-			REVIEW_FORM_ELEMENT_TYPE_TEXT_FIELD => 'manager.reviewFormElements.textfield',
-			REVIEW_FORM_ELEMENT_TYPE_TEXTAREA => 'manager.reviewFormElements.textarea',
-			REVIEW_FORM_ELEMENT_TYPE_CHECKBOXES => 'manager.reviewFormElements.checkboxes',
-			REVIEW_FORM_ELEMENT_TYPE_RADIO_BUTTONS => 'manager.reviewFormElements.radiobuttons',
-			REVIEW_FORM_ELEMENT_TYPE_DROP_DOWN_BOX => 'manager.reviewFormElements.dropdownbox'
-		);
-		return $reviewFormElementTypeOptions;
-	}
-
-	/**
-	 * Get an array of all multiple responses element types.
-	 * @return array reviewFormElementTypes
-	 */
-	function &getMultipleResponsesElementTypes() {
-		static $multipleResponsesElementTypes = array(REVIEW_FORM_ELEMENT_TYPE_CHECKBOXES, REVIEW_FORM_ELEMENT_TYPE_RADIO_BUTTONS, REVIEW_FORM_ELEMENT_TYPE_DROP_DOWN_BOX);
-		return $multipleResponsesElementTypes;
-	}
 }
-
 

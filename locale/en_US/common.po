@@ -606,6 +606,9 @@ msgstr "Previous page"
 msgid "common.pageNumber"
 msgstr "Page {$pageNumber}"
 
+msgid "common.pageFooterLogo.altText"
+msgstr "Page Footer Logo"
+
 msgid "common.percentage"
 msgstr "{$percentage}%"
 

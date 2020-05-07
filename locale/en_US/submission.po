@@ -1160,6 +1160,9 @@ msgstr "Declined"
 msgid "submission.status.published"
 msgstr "Published"
 
+msgid "submission.status.finished"
+msgstr "Finished"
+
 msgid "submission.status.scheduled"
 msgstr "Scheduled"
 

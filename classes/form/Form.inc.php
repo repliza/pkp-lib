@@ -380,6 +380,14 @@ class Form {
 	}
 
 	/**
+	 * Returns the validation checks of the form.
+	 * @return array
+	*/
+	function &getChecks() {
+			return $this->_checks;
+	}
+
+	/**
 	 * Add a validation check to the form.
 	 * @param $formValidator FormValidator
 	 */

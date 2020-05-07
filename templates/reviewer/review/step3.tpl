@@ -13,6 +13,10 @@
 		$('#reviewStep3Form').pkpHandler(
 			'$.pkp.controllers.form.reviewer.ReviewerReviewStep3FormHandler'
 		);
+
+		$('#reviewStep3Form').find('#viewAllDetailsButton').click(function () {ldelim}
+			window.open('{url op="submissionDetails" submissionId=$submission->getId()}');
+		{rdelim});
 	{rdelim});
 </script>
 
@@ -21,6 +25,10 @@
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="reviewStep3FormNotification"}
 
 {fbvFormArea id="reviewStep3"}
+
+	{fbvFormSection}
+		{fbvElement type="button" class="pkp_button_link" id="viewAllDetailsButton" label="reviewer.step1.viewAllDetails"}
+	{/fbvFormSection}
 
 	{capture assign="reviewFilesGridUrl"}{url router=$smarty.const.ROUTE_COMPONENT component="grid.files.review.ReviewerReviewFilesGridHandler" op="fetchGrid" submissionId=$submission->getId() stageId=$reviewAssignment->getStageId() reviewRoundId=$reviewRoundId reviewAssignmentId=$reviewAssignment->getId() escape=false}{/capture}
 	{load_url_in_div id="reviewFilesStep3" url=$reviewFilesGridUrl}

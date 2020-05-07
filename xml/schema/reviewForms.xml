@@ -129,15 +129,17 @@
 		<field name="review_form_element_id" type="I8">
 			<NOTNULL />
 		</field>
-		<field name="review_id" type="I8">
-			<NOTNULL/>
+		<field name="assoc_type" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="assoc_id" type="I8">
+			<NOTNULL />
 		</field>
 		<field name="response_type" type="C2" size="6"/>
 		<field name="response_value" type="X" />
 		<descr>Review form responses.</descr>
 		<index name="review_form_responses_pkey">
 			<col>review_form_element_id</col>
-			<col>review_id</col>
 		</index>
 	</table>
 </schema>

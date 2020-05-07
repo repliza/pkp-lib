@@ -130,6 +130,19 @@ class DataObject {
 					if (empty($this->_data[$key])) unset($this->_data[$key]);
 				}
 			} else {
+
+				// https://github.com/pkp/pkp-lib/issues/5294
+				//
+				// remove data associated with the given key that has been set before
+				// without a locale to avoid illegal string offset warning which would
+				// cause the data to not be set (as second dimension of the array is
+				// not an array at this point but it is accessed with the local key)
+				if (array_key_exists($key, $this->_data)) {
+					if (!is_array($this->_data[$key])) {
+						unset($this->_data[$key]);
+					}
+				}
+
 				$this->_data[$key][$locale] = $value;
 			}
 		}

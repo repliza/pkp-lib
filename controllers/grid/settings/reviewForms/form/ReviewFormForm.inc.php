@@ -13,100 +13,23 @@
  * @brief Form for manager to edit a review form.
  */
 
-import('lib.pkp.classes.form.Form');
+import('lib.pkp.controllers.grid.settings.customForms.form.CustomFormForm');
 
-class ReviewFormForm extends Form {
+class ReviewFormForm extends CustomFormForm {
 
-	/** The ID of the review form being edited, if any */
-	var $reviewFormId;
+	//
+	// Overridden methods from CustomFormElementForm
+	//
+	protected function createCustomFormContext($request) {
+		import('lib.pkp.classes.context.reviewForms.ReviewFormContext');
+		return new ReviewFormContext($request);
+	}
 
 	/**
-	 * Constructor.
-	 * @param $reviewFormId omit for a new review form
+	 * @copydoc CustomFormForm::__construct()
 	 */
 	function __construct($reviewFormId = null) {
-		parent::__construct('manager/reviewForms/reviewFormForm.tpl');
-		$this->reviewFormId = $reviewFormId ? (int) $reviewFormId : null;
-
-		// Validation checks for this form
-		$this->addCheck(new FormValidatorLocale($this, 'title', 'required', 'manager.reviewForms.form.titleRequired'));
-		$this->addCheck(new FormValidatorPost($this));
-		$this->addCheck(new FormValidatorCSRF($this));
-	}
-
-	/**
-	 * Assign form data to user-submitted data.
-	 */
-	function readInputData() {
-		$this->readUserVars(array('title', 'description'));
-	}
-
-	/**
-	 * Initialize form data from current settings.
-	 */
-	function initData() {
-		if ($this->reviewFormId) {
-			$request = Application::get()->getRequest();
-			$context = $request->getContext();
-			$reviewFormDao = DAORegistry::getDAO('ReviewFormDAO'); /* @var $reviewFormDao ReviewFormDAO */
-			$reviewForm = $reviewFormDao->getById($this->reviewFormId, Application::getContextAssocType(), $context->getId());
-
-			$this->setData('title', $reviewForm->getTitle(null));
-			$this->setData('description', $reviewForm->getDescription(null));
-		}
-	}
-
-	/**
-	 * @copydoc Form::fetch
-	 */
-	function fetch($request, $template = null, $display = false) {
-		$json = new JSONMessage();
-
-		$templateMgr = TemplateManager::getManager($request);
-		$templateMgr->assign('reviewFormId', $this->reviewFormId);
-
-		return parent::fetch($request, $template, $display);
-	}
-
-	/**
-	 * @copydoc Form::execute()
-	 */
-	function execute(...$functionArgs) {
-		$request = Application::get()->getRequest();
-		$context = $request->getContext();
-		$reviewFormDao = DAORegistry::getDAO('ReviewFormDAO'); /* @var $reviewFormDao ReviewFormDAO */
-
-		if ($this->reviewFormId) {
-			$reviewForm = $reviewFormDao->getById($this->reviewFormId, Application::getContextAssocType(), $context->getId());
-		} else {
-			$reviewForm = $reviewFormDao->newDataObject();
-			$reviewForm->setAssocType(Application::getContextAssocType());
-			$reviewForm->setAssocId($context->getId());
-			$reviewForm->setActive(0);
-			$reviewForm->setSequence(REALLY_BIG_NUMBER);
-		}
-
-		$reviewForm->setTitle($this->getData('title'), null); // Localized
-		$reviewForm->setDescription($this->getData('description'), null); // Localized
-
-		if ($this->reviewFormId) {
-			$reviewFormDao->updateObject($reviewForm);
-			$this->reviewFormId = $reviewForm->getId();
-		} else {
-			$this->reviewFormId = $reviewFormDao->insertObject($reviewForm);
-			$reviewFormDao->resequenceReviewForms(Application::getContextAssocType(), $context->getId());
-		}
-		parent::execute(...$functionArgs);
-	}
-
-	/**
-	 * Get a list of field names for which localized settings are used
-	 * @return array
-	 */
-	function getLocaleFieldNames() {
-		$reviewFormDao = DAORegistry::getDAO('ReviewFormDAO'); /* @var $reviewFormDao ReviewFormDAO */
-		return $reviewFormDao->getLocaleFieldNames();
+		parent::__construct($reviewFormId, 'manager/reviewForms/reviewFormForm.tpl');
 	}
 }
-
 

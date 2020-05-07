@@ -32,6 +32,8 @@
 
 	{$additionalContributorsFields}
 
+	{$additionalFormFields}
+
 	{include file="submission/submissionMetadataFormFields.tpl"}
 
 	{fbvFormButtons id="step3Buttons" submitText="common.saveAndContinue"}

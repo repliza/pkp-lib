@@ -86,13 +86,19 @@ class PKPSubmissionSubmitStep3Form extends SubmissionSubmitForm {
 		// Execute submission metadata related operations.
 		$this->_metadataFormImplem->execute($this->submission, Application::get()->getRequest());
 
-		// Get an updated version of the submission.
 		$submissionDao = DAORegistry::getDAO('SubmissionDAO'); /* @var $submissionDao SubmissionDAO */
-		$this->submission = $submissionDao->getById($this->submissionId);
+
+		// priorize submission given via constructor as hooks called by parent::execute()
+		// might try to access / modify the submission before $submissionDao->updateObject()
+		// is called below
+		if (!$this->submission) {
+			// Get an updated version of the submission.
+			$this->submission = $submissionDao->getById($this->submissionId);
+		}
 
 		// Set other submission data.
 		if ($this->submission->getSubmissionProgress() <= $this->step) {
-			$this->submission->setSubmissionProgress($this->step + 1);
+			$this->submission->setSubmissionProgress($this->getNextStepNumber($this->step));
 			$this->submission->stampLastActivity();
 			$this->submission->stampModified();
 		}

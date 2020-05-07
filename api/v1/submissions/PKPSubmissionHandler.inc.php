@@ -91,8 +91,18 @@ class PKPSubmissionHandler extends APIHandler {
 					'roles' => [ROLE_ID_MANAGER, ROLE_ID_SUB_EDITOR, ROLE_ID_ASSISTANT],
 				],
 				[
+					'pattern' => $this->getEndpointPattern() . '/{submissionId}/publications/{publicationId}/finish',
+					'handler' => [$this, 'finishPublication'],
+					'roles' => [ROLE_ID_MANAGER, ROLE_ID_SUB_EDITOR, ROLE_ID_ASSISTANT],
+				],
+				[
 					'pattern' => $this->getEndpointPattern() . '/{submissionId}/publications/{publicationId}/unpublish',
 					'handler' => [$this, 'unpublishPublication'],
+					'roles' => [ROLE_ID_MANAGER, ROLE_ID_SUB_EDITOR, ROLE_ID_ASSISTANT],
+				],
+				[
+					'pattern' => $this->getEndpointPattern() . '/{submissionId}/publications/{publicationId}/retract',
+					'handler' => [$this, 'retractPublication'],
 					'roles' => [ROLE_ID_MANAGER, ROLE_ID_SUB_EDITOR, ROLE_ID_ASSISTANT],
 				],
 			],
@@ -133,6 +143,8 @@ class PKPSubmissionHandler extends APIHandler {
 			'editPublication',
 			'publishPublication',
 			'unpublishPublication',
+			'finishPublication',
+			'retractPublication',
 			'deletePublication',
 		];
 		if (in_array($routeName, $requiresSubmissionAccess)) {
@@ -153,6 +165,8 @@ class PKPSubmissionHandler extends APIHandler {
 			'versionPublication',
 			'publishPublication',
 			'unpublishPublication',
+			'finishPublication',
+			'retractPublication',
 			'deletePublication',
 		];
 		if (in_array($routeName, $requiresProductionStageAccess)) {
@@ -654,6 +668,11 @@ class PKPSubmissionHandler extends APIHandler {
 			return $response->withStatus(403)->withJsonError('api.publication.403.cantEditPublished');
 		}
 
+		// Publications can not be edited when they are finished
+		if ($publication->getData('status') === STATUS_FINISHED) {
+			return $response->withStatus(403)->withJsonError('api.publication.403.cantEditFinished');
+		}
+
 		// Prevent users from editing publications if they do not have permission. Except for admins.
 		$userRoles = $this->getAuthorizedContextObject(ASSOC_TYPE_USER_ROLES);
 		if (!in_array(ROLE_ID_SITE_ADMIN, $userRoles) && !Services::get('submission')->canEditPublication($submission->getId(), $currentUser->getId())) {
@@ -755,6 +774,64 @@ class PKPSubmissionHandler extends APIHandler {
 	}
 
 	/**
+	 * Finish one of this submission's publications
+	 *
+	 * If this is a GET request, it will run the pre-finish validation
+	 * checks and return errors but it will not perform the final
+	 * finish step.
+	 *
+	 * @param $slimRequest Request Slim request object
+	 * @param $response Response object
+	 * @param array $args arguments
+	 * @return Response
+	 */
+	public function finishPublication($slimRequest, $response, $args) {
+		// the following code is adopted from publishPublication()
+		$request = $this->getRequest();
+		$submission = $this->getAuthorizedContextObject(ASSOC_TYPE_SUBMISSION);
+		$publication = Services::get('publication')->get((int) $args['publicationId']);
+
+		if (!$publication) {
+			return $response->withStatus(404)->withJsonError('api.404.resourceNotFound');
+		}
+
+		if ($submission->getId() !== $publication->getData('submissionId')) {
+			return $response->withStatus(403)->withJsonError('api.publications.403.submissionsDidNotMatch');
+		}
+
+		if ($publication->getData('status') === STATUS_FINISHED) {
+			return $response->withStatus(403)->withJsonError('api.publication.403.alreadyFinished');
+		}
+
+		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_SUBMISSION, LOCALE_COMPONENT_APP_SUBMISSION);
+
+		$submissionContext = $request->getContext();
+		if (!$submissionContext || $submissionContext->getId() !== $submission->getData('contextId')) {
+			$submissionContext = Services::get('context')->get($submission->getData('contextId'));
+		}
+		$primaryLocale = $submission->getData('locale');
+		$allowedLocales = $submissionContext->getData('supportedSubmissionLocales');
+
+		$errors = Services::get('publication')->validatePublish($publication, $submission, $allowedLocales, $primaryLocale);
+
+		if (!empty($errors)) {
+			return $response->withStatus(400)->withJson($errors);
+		}
+
+		$publication = Services::get('finish')->finish($publication);
+
+		$publicationProps = Services::get('publication')->getFullProperties(
+			$publication,
+			[
+				'request' => $request,
+				'userGroups' => DAORegistry::getDAO('UserGroupDAO')->getByContextId($submission->getData('contextId'))->toArray(),
+			]
+		);
+
+		return $response->withJson($publicationProps, 200);
+	}
+
+	/**
 	 * Unpublish one of this submission's publications
 	 *
 	 * @param $slimRequest Request Slim request object
@@ -794,6 +871,44 @@ class PKPSubmissionHandler extends APIHandler {
 	}
 
 	/**
+	 * Retract one of this submission's publications
+	 *
+	 * @param $slimRequest Request Slim request object
+	 * @param $response Response object
+	 * @param array $args arguments
+	 * @return Response
+	 */
+	public function retractPublication($slimRequest, $response, $args) {
+		$request = $this->getRequest();
+		$submission = $this->getAuthorizedContextObject(ASSOC_TYPE_SUBMISSION);
+		$publication = Services::get('publication')->get((int) $args['publicationId']);
+
+		if (!$publication) {
+			return $response->withStatus(404)->withJsonError('api.404.resourceNotFound');
+		}
+
+		if ($submission->getId() !== $publication->getData('submissionId')) {
+			return $response->withStatus(403)->withJsonError('api.publications.403.submissionsDidNotMatch');
+		}
+
+		if (!in_array($publication->getData('status'), [STATUS_FINISHED, STATUS_SCHEDULED])) {
+			return $response->withStatus(403)->withJsonError('api.publication.403.alreadyRetracted');
+		}
+
+		$publication = Services::get('retract')->retract($publication);
+
+		$publicationProps = Services::get('publication')->getFullProperties(
+			$publication,
+			[
+				'request' => $request,
+				'userGroups' => DAORegistry::getDAO('UserGroupDAO')->getByContextId($submission->getData('contextId'))->toArray(),
+			]
+		);
+
+		return $response->withJson($publicationProps, 200);
+	}
+
+	/**
 	 * Delete one of this submission's publications
 	 *
 	 * Published publications can not be deleted. First you must unpublish them.
@@ -819,6 +934,10 @@ class PKPSubmissionHandler extends APIHandler {
 
 		if ($publication->getData('status') === STATUS_PUBLISHED) {
 			return $response->withStatus(403)->withJsonError('api.publication.403.cantDeletePublished');
+		}
+
+		if ($publication->getData('status') === STATUS_FINISHED) {
+			return $response->withStatus(403)->withJsonError('api.publication.403.cantDeleteFinished');
 		}
 
 		$userGroupDao = DAORegistry::getDAO('UserGroupDAO'); /* @var $userGroupDao UserGroupDAO */

@@ -32,6 +32,12 @@ class DAO {
 	/** The database connection object */
 	var $_dataSource;
 
+	/** The array with field names added via the associated extend...() calls */
+	var $_localeFieldNamesExtended = array();
+
+	/** The array with field names added via the associated extend...() calls */
+	var $_additionalFieldNamesExtended = array();
+
 	/**
 	 * Get db conn.
 	 * @return ADONewConnection
@@ -452,7 +458,7 @@ class DAO {
 	 * @return array List of strings representing field names.
 	 */
 	function getAdditionalFieldNames() {
-		$returner = array();
+		$returner = $this->_additionalFieldNamesExtended;
 		// Call hooks based on the calling entity, assuming
 		// this method is only called by a subclass. Results
 		// in hook calls named e.g. "sessiondao::getAdditionalFieldNames"
@@ -463,13 +469,25 @@ class DAO {
 	}
 
 	/**
+	 * Extend the additional field names returned by getAdditionalFieldNames().
+	 * @param $value string or array or strings
+	 * @see getAdditionalFieldNames
+	 */
+	function extendAdditionalFieldNames($value) {
+		if (!is_array($value))
+			$value = array($value);
+
+		$this->_additionalFieldNamesExtended = array_unique(array_merge($this->_additionalFieldNamesExtended, $value));
+	}
+
+	/**
 	 * Get locale field names. Like getAdditionalFieldNames, but for
 	 * localized (multilingual) fields.
 	 * @see getAdditionalFieldNames
 	 * @return array Array of string field names.
 	 */
 	function getLocaleFieldNames() {
-		$returner = array();
+		$returner = $this->_localeFieldNamesExtended;
 		// Call hooks based on the calling entity, assuming
 		// this method is only called by a subclass. Results
 		// in hook calls named e.g. "sessiondao::getLocaleFieldNames"
@@ -477,6 +495,18 @@ class DAO {
 		HookRegistry::call(strtolower_codesafe(get_class($this)) . '::getLocaleFieldNames', array($this, &$returner));
 
 		return $returner;
+	}
+
+	/**
+	 * Extend the locale field name returned by getLocaleFieldNames().
+	 * @param $value string or array or strings
+	 * @see getLocaleFieldNames
+	 */
+	function extendLocaleFieldNames($value) {
+		if (!is_array($value))
+			$value = array($value);
+
+		$this->_localeFieldNamesExtended = array_unique(array_merge($this->_localeFieldNamesExtended, $value));
 	}
 
 	/**
@@ -558,6 +588,18 @@ class DAO {
 
 		// Remove stale data
 		if (count($staleSettings)) {
+			$this->removeDataObjectSettings($tableName, $idArray, $staleSettings);
+		}
+	}
+
+	/**
+	 * Removes entries from the settings table of a data object.
+	 * @param $tableName string
+	 * @param $idArray array
+	 * @param $settingNames array
+	 */
+	function removeDataObjectSettings($tableName, $idArray, $settingNames) {
+		if (count($settingNames)) {
 			$removeWhere = '';
 			$removeParams = array();
 			foreach ($idArray as $idField => $idValue) {
@@ -565,8 +607,8 @@ class DAO {
 				$removeWhere .= $idField.' = ?';
 				$removeParams[] = $idValue;
 			}
-			$removeWhere .= rtrim(' AND setting_name IN ( '.str_repeat('? ,', count($staleSettings)), ',').')';
-			$removeParams = array_merge($removeParams, $staleSettings);
+			$removeWhere .= rtrim(' AND setting_name IN ( '.str_repeat('? ,', count($settingNames)), ',').')';
+			$removeParams = array_merge($removeParams, $settingNames);
 			$removeSql = 'DELETE FROM '.$tableName.' WHERE '.$removeWhere;
 			$this->update($removeSql, $removeParams);
 		}

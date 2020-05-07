@@ -87,7 +87,22 @@ class AboutContextHandler extends Handler {
 		}
 
 		$sectionDao = Application::getSectionDAO();
-		$sections = $sectionDao->getByContextId($context->getId(), null, !$canSubmitAll)->toArray();
+		$sections = $sectionDao->getTitlesByContextId($context->getId(), !$canSubmitAll);
+
+		if (count($sections) > 0) {
+			array_walk($sections, function (&$item, $sectionId) use ($sectionDao) {
+				$item = array('title' => $item);
+
+				$section = $sectionDao->getById($sectionId);
+
+				$sectionPolicy = $section ? $section->getLocalizedPolicy() : null;
+				$sectionPolicyPlainText = trim(PKPString::html2text($sectionPolicy));
+				if (strlen($sectionPolicyPlainText) > 0)
+					$item['policy'] = $sectionPolicy;
+			});
+		} else {
+			AppLocale::requireComponents(LOCALE_COMPONENT_APP_AUTHOR); // for author.submit.notAccepting
+		}
 
 		// for author.submit.notAccepting
 		if (count($sections) == 0) {
