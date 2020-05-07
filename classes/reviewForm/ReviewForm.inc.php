@@ -21,27 +21,30 @@
  *
  */
 
-class ReviewForm extends DataObject {
+import('lib.pkp.classes.customForm.CustomForm');
 
-	/**
-	 * Get localized title.
-	 * @return string
-	 */
-	function getLocalizedTitle() {
-		return $this->getLocalizedData('title');
-	}
-
-	/**
-	 * Get localized description.
-	 * @return string
-	 */
-	function getLocalizedDescription() {
-		return $this->getLocalizedData('description');
-	}
+class ReviewForm extends CustomForm {
 
 	//
 	// Get/set methods
 	//
+	/**
+	 * @copydoc CustomForm::isEditable()
+	 */
+	function isEditable() {
+		$result = parent::isEditable();
+
+		return $result && $this->getIncompleteCount() == 0 && $this->getCompleteCount() == 0;
+	}
+
+	/**
+	 * @copydoc CustomForm::isDeletable()
+	 */
+	function isDeletable() {
+		$result = parent::isDeletable();
+
+		return $result && $this->getIncompleteCount() == 0 && $this->getCompleteCount() == 0;
+	}
 
 	/**
 	 * Get the number of completed reviews for this review form.
@@ -74,106 +77,5 @@ class ReviewForm extends DataObject {
 	function setIncompleteCount($incompleteCount) {
 		$this->setData('incompleteCount', $incompleteCount);
 	}
-
-	/**
-	 * Get the associated type.
-	 * @return int
-	 */
-	function getAssocType() {
-		return $this->getData('assocType');
-	}
-
-	/**
-	 * Set the associated type.
-	 * @param $assocType int
-	 */
-	function setAssocType($assocType) {
-		$this->setData('assocType', $assocType);
-	}
-
-	/**
-	 * Get the Id of the associated type.
-	 * @return int
-	 */
-	function getAssocId() {
-		return $this->getData('assocId');
-	}
-
-	/**
-	 * Set the Id of the associated type.
-	 * @param $assocId int
-	 */
-	function setAssocId($assocId) {
-		$this->setData('assocId', $assocId);
-	}
-
-	/**
-	 * Get sequence of review form.
-	 * @return float
-	 */
-	function getSequence() {
-		return $this->getData('sequence');
-	}
-
-	/**
-	 * Set sequence of review form.
-	 * @param $sequence float
-	 */
-	function setSequence($sequence) {
-		$this->setData('sequence', $sequence);
-	}
-
-	/**
-	 * Get active flag
-	 * @return int
-	 */
-	function getActive() {
-		return $this->getData('active');
-	}
-
-	/**
-	 * Set active flag
-	 * @param $active int
-	 */
-	function setActive($active) {
-		$this->setData('active', $active);
-	}
-
-	/**
-	 * Get title.
-	 * @param $locale string
-	 * @return string
-	 */
-	function getTitle($locale) {
-		return $this->getData('title', $locale);
-	}
-
-	/**
-	 * Set title.
-	 * @param $title string
-	 * @param $locale string
-	 */
-	function setTitle($title, $locale) {
-		$this->setData('title', $title, $locale);
-	}
-
-	/**
-	 * Get description.
-	 * @param $locale string
-	 * @return string
-	 */
-	function getDescription($locale) {
-		return $this->getData('description', $locale);
-	}
-
-	/**
-	 * Set description.
-	 * @param $description string
-	 * @param $locale string
-	 */
-	function setDescription($description, $locale) {
-		$this->setData('description', $description, $locale);
-	}
 }
-
 

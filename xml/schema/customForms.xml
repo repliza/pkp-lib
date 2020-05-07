@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE schema SYSTEM "../../dtd/xmlSchema.dtd">
+
+<!--
+  * xml/schema/customForms.xml
+  *
+  * Distributed under the GNU GPL v2. For full terms see the file docs/COPYING.
+  *
+  * Custom Form schema in XML.
+  -->
+
+<schema version="0.2">
+	<!--
+	  *
+	  * TABLE custom_forms
+	  *
+	  -->
+	<table name="custom_forms">
+		<field name="custom_form_id" type="I8">
+			<KEY/>
+			<AUTOINCREMENT/>
+		</field>
+		<field name="assoc_type" type="I8">
+			<!-- NOTNULL constraint omitted for upgrade purposes -->
+		</field>
+		<field name="assoc_id" type="I8">
+			<!-- NOTNULL constraint omitted for upgrade purposes -->
+		</field>
+		<field name="seq" type="F" />
+		<field name="is_active" type="I1" />
+		<descr>custom forms.</descr>
+	</table>
+
+	<!--
+	  *
+	  * TABLE custom_form_settings
+	  *
+	  -->
+	<table name="custom_form_settings">
+		<field name="custom_form_id" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="locale" type="C2" size="14">
+			<NOTNULL />
+			<DEFAULT VALUE=""/>
+		</field>
+		<field name="setting_name" type="C2" size="255">
+			<NOTNULL />
+		</field>
+		<field name="setting_value" type="X"/>
+		<field name="setting_type" type="C2" size="6">
+			<NOTNULL/>
+		</field>
+		<descr>custom form settings</descr>
+		<index name="custom_form_settings_custom_form_id">
+			<col>custom_form_id</col>
+		</index>
+		<index name="custom_form_settings_pkey">
+			<col>custom_form_id</col>
+			<col>locale</col>
+			<col>setting_name</col>
+			<UNIQUE />
+		</index>
+	</table>
+
+	<!--
+	  *
+	  * TABLE custom_form_elements
+	  *
+	  -->
+	<table name="custom_form_elements">
+		<field name="custom_form_element_id" type="I8">
+			<KEY/>
+			<AUTOINCREMENT/>
+		</field>
+		<field name="custom_form_id" type="I8">
+			<NOTNULL/>
+		</field>
+		<field name="seq" type="F" />
+		<field name="element_type" type="I8" />
+		<field name="required" type="I1" />
+		<field name="included" type="I1" />
+		<descr>custom form elements.</descr>
+		<index name="custom_form_elements_custom_form_id">
+			<col>custom_form_id</col>
+		</index>
+	</table>
+
+	<!--
+	  *
+	  * TABLE custom_form_element_settings
+	  *
+	  -->
+	<table name="custom_form_element_settings">
+		<field name="custom_form_element_id" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="locale" type="C2" size="14">
+			<NOTNULL />
+			<DEFAULT VALUE=""/>
+		</field>
+		<field name="setting_name" type="C2" size="255">
+			<NOTNULL />
+		</field>
+		<field name="setting_value" type="X"/>
+		<field name="setting_type" type="C2" size="6">
+			<NOTNULL/>
+		</field>
+		<descr>custom form element settings</descr>
+		<index name="custom_form_element_settings_custom_form_element_id">
+			<col>custom_form_element_id</col>
+		</index>
+		<index name="custom_form_element_settings_pkey">
+			<col>custom_form_element_id</col>
+			<col>locale</col>
+			<col>setting_name</col>
+			<UNIQUE />
+		</index>
+	</table>
+
+	<!--
+	  *
+	  * TABLE custom_form_responses
+	  *
+	  -->
+	<table name="custom_form_responses">
+		<field name="custom_form_element_id" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="assoc_type" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="assoc_id" type="I8">
+			<NOTNULL />
+		</field>
+		<field name="response_type" type="C2" size="6"/>
+		<field name="response_value" type="X" />
+		<descr>custom form responses.</descr>
+		<index name="custom_form_responses_pkey">
+			<col>custom_form_element_id</col>
+		</index>
+	</table>
+</schema>

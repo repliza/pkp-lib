@@ -187,6 +187,9 @@ msgstr ""
 "\t\tSuchergebnisse zu gewichten. Bitte wählen Sie eine der Nutzungsmetriken als Standard aus.\n"
 "\t"
 
+msgid "admin.settings.homeFooterImage.altText"
+msgstr "Logo in der Fußzeile der Website"
+
 msgid "admin.settings.introduction"
 msgstr "Einführung"
 

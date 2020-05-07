@@ -15,7 +15,15 @@
  *
  */
 
-class ReviewFormResponse extends DataObject {
+import ('lib.pkp.classes.customForm.CustomFormResponse');
+
+class ReviewFormResponse extends CustomFormResponse {
+
+	public function __construct() {
+		parent::__construct();
+
+		$this->setAssocType(ASSOC_TYPE_REVIEW_ASSIGNMENT);
+	}
 
 	//
 	// Get/set methods
@@ -26,7 +34,7 @@ class ReviewFormResponse extends DataObject {
 	 * @return int
 	 */
 	function getReviewId() {
-		return $this->getData('reviewId');
+		return $this->getAssocId();
 	}
 
 	/**
@@ -34,7 +42,8 @@ class ReviewFormResponse extends DataObject {
 	 * @param $reviewId int
 	 */
 	function setReviewId($reviewId) {
-		$this->setData('reviewId', $reviewId);
+		$this->setAssocType(ASSOC_TYPE_REVIEW_ASSIGNMENT);
+		$this->setAssocId($reviewId);
 	}
 
 	/**
@@ -42,7 +51,7 @@ class ReviewFormResponse extends DataObject {
 	 * @return int
 	 */
 	function getReviewFormElementId() {
-		return $this->getData('reviewFormElementId');
+		return parent::getCustomFormElementId();
 	}
 
 	/**
@@ -50,39 +59,17 @@ class ReviewFormResponse extends DataObject {
 	 * @param $reviewFormElementId int
 	 */
 	function setReviewFormElementId($reviewFormElementId) {
-		$this->setData('reviewFormElementId', $reviewFormElementId);
+		parent::setCustomFormElementId($reviewFormElementId);
 	}
 
 	/**
-	 * Get response value.
-	 * @return int
+	 * Set all data variables at once.
+	 * @param $data array
 	 */
-	function getValue() {
-		return $this->getData('value');
-	}
+	function setAllData(&$data) {
+		$this->_data =& $data;
 
-	/**
-	 * Set response value.
-	 * @param $value int
-	 */
-	function setValue($value) {
-		$this->setData('value', $value);
-	}
-
-	/**
-	 * Get response type.
-	 * @return string
-	 */
-	function getResponseType() {
-		return $this->getData('type');
-	}
-
-	/**
-	 * Set response type.
-	 * @param $type string
-	 */
-	function setResponseType($type) {
-		$this->setData('type', $type);
+		$this->setAssocType(ASSOC_TYPE_REVIEW_ASSIGNMENT);
 	}
 }
 

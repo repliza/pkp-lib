@@ -21,8 +21,8 @@
 </script>
 <div id="editReviewFormTabs" class="pkp_controllers_tab">
 	<ul>
-		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="reviewFormBasics" reviewFormId=$reviewFormId}">{translate key="manager.reviewForms.edit"}</a></li>
-		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="reviewFormElements" reviewFormId=$reviewFormId}">{translate key="manager.reviewFormElements"}</a></li>
-		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="reviewFormPreview" reviewFormId=$reviewFormId}">{translate key="manager.reviewForms.preview"}</a></li>
+		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="customFormBasics" customFormId=$customFormId}">{translate key="manager.customForms.edit"}</a></li>
+		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="customFormElements" customFormId=$customFormId}">{translate key="manager.customFormElements"}</a></li>
+		<li><a href="{url router=$smarty.const.ROUTE_COMPONENT op="customFormPreview" customFormId=$customFormId}">{translate key="manager.customForms.preview"}</a></li>
 	</ul>
 </div>

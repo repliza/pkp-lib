@@ -12,54 +12,15 @@
  *
  * @brief ReviewFormElements grid row definition
  */
-import('lib.pkp.classes.controllers.grid.GridRow');
-import('lib.pkp.classes.linkAction.request.RemoteActionConfirmationModal');
+import('lib.pkp.controllers.grid.settings.customForms.CustomFormElementGridRow');
 
-class ReviewFormElementGridRow extends GridRow {
-
+class ReviewFormElementGridRow extends CustomFormElementGridRow {
 	//
-	// Overridden methods from GridRow
+	// Overridden methods from CustomFormElementGridRow
 	//
-	/**
-	 * @copydoc GridRow::initialize()
-	 */
-	function initialize($request, $template = null) {
-		parent::initialize($request, $template);
-		// add grid row actions: edit, delete
-
-		$element = parent::getData();
-		assert(is_a($element, 'ReviewFormElement'));
-		$rowId = $this->getId();
-
-		$router = $request->getRouter();
-		if (!empty($rowId) && is_numeric($rowId)) {
-			// add 'edit' grid row action
-			$this->addAction(
-				new LinkAction(
-					'edit',
-					new AjaxModal(
-						$router->url($request, null, null, 'editReviewFormElement', null, array('rowId' => $rowId, 'reviewFormId' => $element->getReviewFormId())),
-						__('grid.action.edit'),
-						'modal_edit',
-						true
-					),
-				__('grid.action.edit'),
-				'edit')
-			);
-			// add 'delete' grid row action
-			$this->addAction(
-				new LinkAction(
-					'delete',
-					new RemoteActionConfirmationModal(
-						$request->getSession(),
-						__('manager.reviewFormElements.confirmDelete'),
-						null,
-						$router->url($request, null, null, 'deleteReviewFormElement', null, array('rowId' => $rowId, 'reviewFormId' => $element->getReviewFormId()))
-					),
-					__('grid.action.delete'),
-					'delete')
-			);
-		} 
+	protected function createCustomFormContext($request) {
+		import('lib.pkp.classes.context.reviewForms.ReviewFormContext');
+		return new ReviewFormContext($request);
 	}
 }
 

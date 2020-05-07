@@ -15,8 +15,12 @@
 
 import('lib.pkp.classes.submission.form.SubmissionSubmitForm');
 import('classes.publication.Publication');
+import('lib.pkp.classes.submission.PKPSubmissionChecklistFormImplementation');
 
 class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
+
+	private $_submissionChecklistFormImplem;
+
 	/** @var boolean Is there a privacy statement to be confirmed? */
 	public $hasPrivacyStatement = true;
 
@@ -25,7 +29,7 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 	 * @param $context Context
 	 * @param $submission Submission (optional)
 	 */
-	function __construct($context, $submission = null) {
+	function __construct($context, $submission = null, $submissionChecklistFormImplementation = null) {
 		parent::__construct($context, $submission, 1);
 
 		$enableSiteWidePrivacyStatement = Config::getVar('general', 'sitewide_privacy_statement');
@@ -47,9 +51,9 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 			$this->addCheck(new FormValidator($this, 'privacyConsent', 'required', 'user.profile.form.privacyConsentRequired'));
 		}
 
-		foreach ((array) $context->getLocalizedData('submissionChecklist') as $key => $checklistItem) {
-			$this->addCheck(new FormValidator($this, "checklist-$key", 'required', 'submission.submit.checklistErrors'));
-		}
+		assert(is_a($submissionChecklistFormImplementation, 'PKPSubmissionChecklistFormImplementation'));
+		$this->_submissionChecklistFormImplem = $submissionChecklistFormImplementation;
+		$this->_submissionChecklistFormImplem->addChecks();
 	}
 
 	/**
@@ -89,6 +93,9 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 			'supportedSubmissionLocaleNames',
 			$this->context->getSupportedSubmissionLocaleNames()
 		);
+
+		$this->setupTemplateSubmissionChecklist($templateMgr, $request);
+		$this->setupTemplatePrivacyConsent($templateMgr);
 
 		// if this context has a copyright notice that the author must agree to, present the form items.
 		if ((boolean) $this->context->getData('copyrightNotice')) {
@@ -194,9 +201,8 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 		$vars = array(
 			'userGroupId', 'locale', 'copyrightNoticeAgree', 'commentsToEditor','privacyConsent'
 		);
-		foreach ((array) $this->context->getLocalizedData('submissionChecklist') as $key => $checklistItem) {
-			$vars[] = "checklist-$key";
-		}
+
+		$vars = array_merge($vars, $this->_submissionChecklistFormImplem->getUserVars());
 
 		$this->readUserVars($vars);
 	}
@@ -205,7 +211,18 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 	 * Set the submission data from the form.
 	 * @param Submission $submission
 	 */
-	function setSubmissionData($submission) { }
+	function setSubmissionData($submission) {
+		// submission checklist
+		$this->_submissionChecklistFormImplem->execute($submission);
+
+		// privacy consent
+		$submission->setData($this->getPrivacyConsentSettingName(), $this->getData('privacyConsent') === '1');
+
+		$locales = $this->context->getSupportedSubmissionLocales();
+		foreach ($locales as $locale) {
+			$submission->setData($this->getPrivacyStatementPlainTextSettingName(), $this->getPrivacyStatementPlainText($locale), $locale);
+		}
+	}
 
 	/**
 	 * Set the publication data from the form.
@@ -301,6 +318,10 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 
 		$submissionDao = DAORegistry::getDAO('SubmissionDAO'); /* @var $submissionDao SubmissionDAO */
 		$request = Application::get()->getRequest();
+
+		$this->extendSubmissionDAOLocaleFieldNames($submissionDao);
+		$this->extendSubmissionDAOAdditionalFieldNames($submissionDao);
+
 		$user = $request->getUser();
 		$userGroupDao = DAORegistry::getDAO('UserGroupDAO'); /* @var $userGroupDao UserGroupDAO */
 
@@ -316,7 +337,7 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 			if ($this->submission->getSubmissionProgress() <= $this->step) {
 				$this->submission->stampLastActivity();
 				$this->submission->stampModified();
-				$this->submission->setSubmissionProgress($this->step + 1);
+				$this->submission->setSubmissionProgress($this->getNextStepNumber($this->step));
 			}
 			// Add, remove or update comments to editor
 			$query = $this->getCommentsToEditor($this->submissionId);
@@ -337,7 +358,7 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 
 			$this->submission->stampLastActivity();
 			$this->submission->stampModified();
-			$this->submission->setSubmissionProgress($this->step + 1);
+			$this->submission->setSubmissionProgress($this->getNextStepNumber($this->step));
 			$this->submission->setStageId(WORKFLOW_STAGE_ID_SUBMISSION);
 			// Insert the submission
 			$this->submission = Services::get('submission')->add($this->submission, $request);
@@ -393,5 +414,69 @@ class PKPSubmissionSubmitStep1Form extends SubmissionSubmitForm {
 		}
 
 		return $this->submissionId;
+	}
+
+	private function extendSubmissionDAOLocaleFieldNames($submissionDao) {
+		$this->_submissionChecklistFormImplem->extendSubmissionDAOLocaleFieldNames($submissionDao);
+
+		$submissionDao->extendLocaleFieldNames($this->getPrivacyStatementPlainTextSettingName());
+	}
+
+	private function extendSubmissionDAOAdditionalFieldNames($submissionDao) {
+		$this->_submissionChecklistFormImplem->extendSubmissionDAOAdditionalFieldNames($submissionDao);
+
+		$submissionDao->extendAdditionalFieldNames($this->getPrivacyConsentSettingName());
+}
+
+	private function getPrivacyStatementPlainText($locale = null) {
+		return trim(PKPString::html2text($this->context->getSetting('privacyStatement', $locale)));
+	}
+
+	private function getSubmissionChecklistItemCheckedSettingName($key) {
+		return "submissionChecklistItemChecked$key";
+	}
+
+	private function getSubmissionChecklistItemContentSettingName($key) {
+		return "submissionChecklistItemContent$key";
+	}
+
+	private function setupTemplateSubmissionChecklist($templateMgr, $request) {
+		$submissionChecklistSettingTemplateVar =
+			$this->_submissionChecklistFormImplem->getTemplateVar($request, $this->submission);
+
+		$templateMgr->assign('submissionChecklist', $submissionChecklistSettingTemplateVar);
+	}
+
+	private function getPrivacyConsentSettingName() {
+		return 'privacyConsent';
+	}
+
+	private function getPrivacyStatementPlainTextSettingName() {
+		return 'privacyStatementPlainText';
+	}
+
+	private function setupTemplatePrivacyConsent($templateMgr) {
+		if (isset($this->submission))
+		{
+			$locale = $this->submission->getLocale();
+
+			// compare privacy statement's plain text stored on previous submit with current configured value
+			$privacyStatementPlainTextSettingName = $this->getPrivacyStatementPlainTextSettingName();
+
+			$privacyStatementPlainTextFromPreviousSubmit = $this->submission->getData($privacyStatementPlainTextSettingName, $locale);
+			$currentPrivacyStatementPlainText = $this->getPrivacyStatementPlainText($locale);
+
+			if ($privacyStatementPlainTextFromPreviousSubmit === $currentPrivacyStatementPlainText) {
+				// privacy statement is still the same, render checkbox with the state stored
+				$privacyConsentSettingName = $this->getPrivacyConsentSettingName();
+
+				$checked = $this->submission->getData($privacyConsentSettingName);
+			} else {
+				// privacy statement has changed, render it as unchecked so that user needs to confirm again
+				$checked = false;
+			}
+
+			$templateMgr->assign('privacyConsent', $checked);
+		}
 	}
 }

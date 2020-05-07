@@ -248,6 +248,10 @@ class AuthorGridHandler extends GridHandler {
 			return false;
 		}
 
+		if ($publication->getData('status') === STATUS_FINISHED) {
+			return false;
+		}
+
 		if (in_array(ROLE_ID_SITE_ADMIN, $userRoles)) {
 			return true;
 		}

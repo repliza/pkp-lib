@@ -24,6 +24,7 @@
 		<li><a name="changePassword" href="{url router=$smarty.const.ROUTE_COMPONENT component="tab.user.ProfileTabHandler" op="changePassword"}">{translate key="user.password"}</a></li>
 		<li><a name="notificationSettings" href="{url router=$smarty.const.ROUTE_COMPONENT component="tab.user.ProfileTabHandler" op="notificationSettings"}">{translate key="notification.notifications"}</a></li>
 		<li><a name="apiSettings" href="{url router=$smarty.const.ROUTE_COMPONENT component="tab.user.ProfileTabHandler" op="apiProfile"}">{translate key="user.apiKey"}</a></li>
+		{call_hook name="User::Profile::AdditionalTabs"}
 	</ul>
 </div>
 

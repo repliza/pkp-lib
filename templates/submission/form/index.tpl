@@ -10,6 +10,16 @@
 {strip}
 {assign var=pageTitle value="submission.submit.title"}
 {include file="common/header.tpl"}
+
+{assign var="selectedStepIndex" value=0}
+
+{assign var="i" value=0}
+{foreach from=$steps key=step item=stepLocaleKey}
+	{if $step eq $submissionProgress}
+		{assign var="selectedStepIndex" value=$i}
+	{/if}
+	{assign var="i" value=$i+1}
+{/foreach}
 {/strip}
 
 <script type="text/javascript">
@@ -18,8 +28,9 @@
 		$('#submitTabs').pkpHandler(
 			'$.pkp.pages.submission.SubmissionTabHandler',
 			{ldelim}
+				submissionSteps: [{foreach from=$steps key=step item=stepLocaleKey}{$step}, {/foreach}],
 				submissionProgress: {$submissionProgress},
-				selected: {$submissionProgress-1},
+				selected: {$selectedStepIndex},
 				cancelUrl: {url|json_encode page="submissions" escape=false},
 				cancelConfirmText: {translate|json_encode key="submission.submit.cancelSubmission"}
 			{rdelim}
@@ -29,8 +40,9 @@
 
 <div id="submitTabs" class="pkp_controllers_tab">
 	<ul>
+		{assign var="i" value=1}
 		{foreach from=$steps key=step item=stepLocaleKey}
-			<li><a name="step-{$step|escape}" href="{url op="step" path=$step submissionId=$submissionId sectionId=$sectionId}">{$step}. {translate key=$stepLocaleKey}</a></li>
+			<li><a name="step-{$step|escape}" href="{url op="step" path=$step submissionId=$submissionId sectionId=$sectionId}">{$i++}. {translate key=$stepLocaleKey}</a></li>
 		{/foreach}
 	</ul>
 </div>

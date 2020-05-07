@@ -27,6 +27,7 @@ define('STATUS_QUEUED', 1);
 define('STATUS_PUBLISHED', 3);
 define('STATUS_DECLINED', 4);
 define('STATUS_SCHEDULED', 5);
+define('STATUS_FINISHED', 100);
 
 // License settings (internal use only)
 define ('PERMISSIONS_FIELD_LICENSE_URL', 1);
@@ -146,6 +147,7 @@ abstract class PKPSubmission extends DataObject {
 				STATUS_PUBLISHED => 'submission.status.published',
 				STATUS_DECLINED => 'submission.status.declined',
 				STATUS_SCHEDULED => 'submission.status.scheduled',
+				STATUS_FINISHED => 'submission.status.finished',
 			);
 		}
 		return $statusMap;

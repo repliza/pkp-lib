@@ -248,8 +248,8 @@ abstract class PKPContextService implements EntityPropertyInterface, EntityReadI
 		$user = Application::get()->getRequest()->getUser();
 		\ValidatorFactory::temporaryFilesExist(
 			$validator,
-			['favicon', 'homepageImage', 'pageHeaderLogoImage', 'styleSheet'],
-			['favicon', 'homepageImage', 'pageHeaderLogoImage'],
+			['favicon', 'homepageImage', 'pageHeaderLogoImage', 'pageFooterLogoImage', 'styleSheet'],
+			['favicon', 'homepageImage', 'pageHeaderLogoImage', 'pageFooterLogoImage'],
 			$props,
 			$allowedLocales,
 			$user ? $user->getId() : null
@@ -348,7 +348,7 @@ abstract class PKPContextService implements EntityPropertyInterface, EntityReadI
 
 		// Move uploaded files into place and update the settings
 		$supportedLocales = $context->getSupportedFormLocales();
-		$fileUploadProps = ['favicon', 'homepageImage', 'pageHeaderLogoImage'];
+		$fileUploadProps = ['favicon', 'homepageImage', 'pageHeaderLogoImage', 'pageFooterLogoImage'];
 		$params = [];
 		foreach ($fileUploadProps as $fileUploadProp) {
 			$value = $context->getData($fileUploadProp);
@@ -403,7 +403,7 @@ abstract class PKPContextService implements EntityPropertyInterface, EntityReadI
 		// Move uploaded files into place and update the params
 		$userId = $request->getUser() ? $request->getUser()->getId() : null;
 		$supportedLocales = $context->getSupportedFormLocales();
-		$fileUploadParams = ['favicon', 'homepageImage', 'pageHeaderLogoImage'];
+		$fileUploadParams = ['favicon', 'homepageImage', 'pageHeaderLogoImage', 'pageFooterLogoImage'];
 		foreach ($fileUploadParams as $fileUploadParam) {
 			if (!array_key_exists($fileUploadParam, $params)) {
 				continue;

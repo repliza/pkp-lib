@@ -1125,6 +1125,9 @@ msgstr "Abgelehnt"
 msgid "submission.status.published"
 msgstr "Veröffentlicht"
 
+msgid "submission.status.finished"
+msgstr "Abgeschlossen"
+
 msgid "submission.submit.uploadStep"
 msgstr "1. Beitrag hochladen"
 

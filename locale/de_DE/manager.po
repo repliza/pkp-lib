@@ -675,6 +675,12 @@ msgstr "Fußzeile"
 msgid "manager.setup.pageFooter.description"
 msgstr "Geben Sie alle Grafiken, Text oder HTML-Code an, die Sie am Fuß Ihrer Website anzeigen möchten."
 
+msgid "manager.setup.pageFooterLogoImage"
+msgstr "Fußzeile Logo"
+
+msgid "manager.setup.pageFooterLogoImageLinkUrl"
+msgstr "Fußzeile Logo Link URL"
+
 msgid "manager.setup.peerReview.description"
 msgstr "Beschreiben Sie die Begutachtungsrichtlinien und die Abläufe für Leser/innen und Autor/innen. Diese Beschreibung enthält üblicherweise die Anzahl der Gutachter/innen, die typischerweise eine Einreichung begutachten, die Kriterien, anhand derer Gutachter/innen urteilen sollen, die erwartete Begutachtungsdauer und die Grundsätze der Gutachter/innenauswahl."
 
@@ -1151,6 +1157,99 @@ msgstr "Vertrieb"
 
 msgid "manager.distribution.title"
 msgstr "Vertriebs-Einstellungen"
+
+msgid "manager.customForms"
+msgstr "Benutzerdefinierte Formulare"
+
+msgid "manager.customFormElement.changeType"
+msgstr "Typ des Formularelements ändern..."
+
+msgid "manager.customFormElements"
+msgstr "Formularelemente"
+
+msgid "manager.customFormElements.checkboxes"
+msgstr "Checkboxen (Sie können eine oder mehrere auswählen)"
+
+msgid "manager.customFormElements.chooseType"
+msgstr "Feldtyp auswählen"
+
+msgid "manager.customFormElements.confirmDelete"
+msgstr "Löschen eines Formularfeldes bestätigen ..."
+
+msgid "manager.customFormElements.create"
+msgstr "Neues Feld anlegen"
+
+msgid "manager.customFormElements.dropdownbox"
+msgstr "Auswahlliste"
+
+msgid "manager.customFormElements.elementType"
+msgstr "Feldtyp"
+
+msgid "manager.customFormElements.form.elementTypeRequired"
+msgstr "Für dieses Feld ist die Angabe eines Feldtyps erforderlich."
+
+msgid "manager.customFormElements.form.questionRequired"
+msgstr "Für dieses Formularfeld ist die Angabe einer Frage erforderlich."
+
+msgid "manager.customFormElements.question"
+msgstr "Feld"
+
+msgid "manager.customFormElements.description"
+msgstr "Beschreibung"
+
+msgid "manager.customFormElements.possibleResponse"
+msgstr "Auswahl"
+
+msgid "manager.customFormElements.radiobuttons"
+msgstr "Radiobuttons (keine Mehrfachauswahl möglich)"
+
+msgid "manager.customFormElements.required"
+msgstr "Feld ist ein Pflichtfeld"
+
+msgid "manager.customFormElements.included"
+msgstr "Feld wird aufgenommen"
+
+msgid "manager.customFormElements.smalltextfield"
+msgstr "Ein-Wort-Textfeld"
+
+msgid "manager.customFormElements.textarea"
+msgstr "Erweitertes Textfeld"
+
+msgid "manager.customFormElements.textfield"
+msgstr "Einzeiliges Textfeld"
+
+msgid "manager.customForms.confirmCopy"
+msgstr "Sind Sie sicher, dass Sie eine Kopie dieses Formulars anlegen möchten?"
+
+msgid "manager.customForms.confirmDelete"
+msgstr "Sind Sie sicher, dass Sie dieses Formular löschen möchten?"
+
+msgid "manager.customForms.create"
+msgstr "Benutzerdefiniertes Formular erstellen"
+
+msgid "manager.customForms.edit"
+msgstr "Benutzerdefiniertes Formular bearbeiten"
+
+msgid "manager.customForms.form.titleRequired"
+msgstr "Die Angabe eines Titels für das Formular ist erforderlich."
+
+msgid "manager.customForms.preview"
+msgstr "Vorschau des Formulars"
+
+msgid "manager.customFormElements"
+msgstr "Formularelemente"
+
+msgid "manager.customForms.confirmActivate"
+msgstr "Sind Sie sicher, dass Sie dieses Formular aktivieren möchten?"
+
+msgid "manager.customForms.confirmDeactivate"
+msgstr "Sind Sie sicher, dass Sie dieses Formular deaktivieren möchten?"
+
+msgid "manager.customForms.title"
+msgstr "Titel"
+
+msgid "manager.customForms.description"
+msgstr "Beschreibung und Anweisungen"
 
 msgid "manager.reviewForms"
 msgstr "Begutachtungsformulare"

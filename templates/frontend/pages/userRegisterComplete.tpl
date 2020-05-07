@@ -27,9 +27,7 @@
 		{/if}
 		{if $currentContext}
 			<li class="new_submission">
-				<a href="{url page="submission" op="wizard"}">
-					{translate key="user.login.registrationComplete.newSubmission"}
-				</a>
+				{include file="frontend/pages/userRegisterCompleteNewSubmissionLink.tpl"}
 			</li>
 		{/if}
 		<li class="edit_profile">

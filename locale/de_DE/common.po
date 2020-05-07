@@ -573,6 +573,9 @@ msgstr "Zusätzliche Seiten durchstöbern"
 msgid "common.pageNumber"
 msgstr "Seite {$pageNumber}"
 
+msgid "common.pageFooterLogo.altText"
+msgstr "Logo in der Fußzeile"
+
 msgid "common.percentage"
 msgstr "{$percentage}%"
 

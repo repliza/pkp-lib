@@ -869,6 +869,7 @@ class PKPTemplateManager extends Smarty {
 	 * @copydoc Smarty::display()
 	 */
 	function display($template = null, $cache_id = null, $compile_id = null, $parent = null) {
+		HookRegistry::call('TemplateManager::display::before', array($this, &$template));
 
 		// Output global constants used in new component library
 		$output = 'pkp.const = ' . json_encode($this->_constants) . ';';

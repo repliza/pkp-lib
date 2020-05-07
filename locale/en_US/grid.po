@@ -194,10 +194,10 @@ msgstr "Import or export content or site data"
 msgid "grid.action.orderItems"
 msgstr "Enable ordering mode"
 
-msgid "grid.action.editSubmissionChecklist"
+msgid "grid.action.editCustomChecklist"
 msgstr "Edit this checklist item"
 
-msgid "grid.action.deleteSubmissionChecklist"
+msgid "grid.action.deleteCustomChecklist"
 msgstr "Delete this checklist item"
 
 msgid "grid.action.resetAll"
@@ -410,7 +410,7 @@ msgstr "Create a new version"
 msgid "grid.reviewForm.title"
 msgstr "Review Forms"
 
-msgid "grid.reviewFormElement.responseItems"
+msgid "grid.customFormElement.responseItems"
 msgstr "Response Options"
 
 msgid "grid.noFiles"
@@ -437,7 +437,7 @@ msgstr "Production Template Library"
 msgid "grid.submissionChecklist.title"
 msgstr "Submission Checklist"
 
-msgid "grid.submissionChecklist.column.checklistItem"
+msgid "grid.customChecklist.column.checklistItem"
 msgstr "Checklist Item"
 
 msgid "author.users.contributor.name"

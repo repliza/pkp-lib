@@ -12,85 +12,18 @@
  * @brief Review form element response item listbuilder handler
  */
 
-import('lib.pkp.controllers.listbuilder.settings.SetupListbuilderHandler');
+import('lib.pkp.controllers.listbuilder.settings.customForms.CustomFormElementResponseItemListbuilderHandler');
 
-class ReviewFormElementResponseItemListbuilderHandler extends SetupListbuilderHandler {
-
-	/** @var int Review form element ID **/
-	var $_reviewFormElementId;
-
+class ReviewFormElementResponseItemListbuilderHandler extends CustomFormElementResponseItemListbuilderHandler {
 
 	//
-	// Overridden template methods
+	// Overridden methods from CustomFormElementResponseItemListbuilderHandler
 	//
-	/**
-	 * @copydoc SetupListbuilderHandler::initialize()
-	 */
-	function initialize($request, $args = null) {
-		parent::initialize($request, $args);
-		AppLocale::requireComponents(LOCALE_COMPONENT_PKP_MANAGER);
-		$this->_reviewFormElementId = (int) $request->getUserVar('reviewFormElementId');
-
-		// Basic configuration
-		$this->setTitle('grid.reviewFormElement.responseItems');
-		$this->setSourceType(LISTBUILDER_SOURCE_TYPE_TEXT);
-		$this->setSaveType(LISTBUILDER_SAVE_TYPE_EXTERNAL);
-		$this->setSaveFieldName('possibleResponses');
-
-		// Possible response column
-		$responseColumn = new MultilingualListbuilderGridColumn($this, 'possibleResponse', 'manager.reviewFormElements.possibleResponse', null, null, null, null, array('tabIndex' => 1));
-		import('lib.pkp.controllers.listbuilder.settings.reviewForms.ReviewFormElementResponseItemListbuilderGridCellProvider');
-	 	$responseColumn->setCellProvider(new ReviewFormElementResponseItemListbuilderGridCellProvider());	
-		$this->addColumn($responseColumn);
+	protected function createCustomFormContext($request) {
+		import('lib.pkp.classes.context.reviewForms.ReviewFormContext');
+		return new ReviewFormContext($request);
 	}
 
-	/**
-	 * @copydoc GridHandler::loadData()
-	 */
-	protected function loadData($request, $filter = null) {
-		$reviewFormElementDao = DAORegistry::getDAO('ReviewFormElementDAO'); /* @var $reviewFormElementDao ReviewFormElementDAO */
-		$reviewFormElement = $reviewFormElementDao->getById($this->_reviewFormElementId);
-		$formattedResponses = array();
-		if ($reviewFormElement) {
-			$possibleResponses = $reviewFormElement->getPossibleResponses(null);
-			foreach ((array) $possibleResponses as $locale => $values) {
-				foreach ($values as $rowId => $value) {
-					// WARNING: Listbuilders don't like 0 row IDs; offsetting
-					// by 1. This is reversed in the saving code.
-					$formattedResponses[$rowId+1][0]['content'][$locale] = $value;
-				}
-			}
-		}
-		return $formattedResponses;
-	}
-
-	/**
-	 * @copydoc GridHandler::getRowDataElement
-	 */
-	protected function getRowDataElement($request, &$rowId) {
-		// Fallback on the parent if an existing rowId is found
-		if ( !empty($rowId) ) {
-			return parent::getRowDataElement($request, $rowId); 
-		}
-
-		// If we're bouncing a row back upon a row edit
-		$rowData = $this->getNewRowId($request);
-		if ($rowData) {
-			return array(array('content' => $rowData['possibleResponse']));
-		}
-
-		// If we're generating an empty row to edit
-		return array(array('content' => array()));
-	}
-
-	/**
-	 * @copydoc ListbuilderHandler::fetch()
-	 */
-	function fetch($args, $request) {
-		$templateMgr = TemplateManager::getManager($request);
-		$templateMgr->assign('availableOptions', true);
-		return $this->fetchGrid($args, $request);
-	}
 }
 
 

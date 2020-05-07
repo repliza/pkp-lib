@@ -848,7 +848,7 @@ abstract class PKPSubmissionService implements EntityPropertyInterface, EntityRe
 		// Get the new current publication after status changes or deletions
 		// Use the latest published publication or, failing that, the latest publication
 		$newCurrentPublicationId = array_reduce($publications, function($a, $b) {
-			return $b->getData('status') === STATUS_PUBLISHED && $b->getId() > $a ? $b->getId() : $a;
+			return ($b->getData('status') === STATUS_PUBLISHED || $b->getData('status') === STATUS_FINISHED) && $b->getId() > $a ? $b->getId() : $a;
 		}, 0);
 		if (!$newCurrentPublicationId) {
 			$newCurrentPublicationId = array_reduce($publications, function($a, $b) {
@@ -863,6 +863,10 @@ abstract class PKPSubmissionService implements EntityPropertyInterface, EntityRe
 			foreach ($publications as $publication) {
 				if ($publication->getData('status') === STATUS_PUBLISHED) {
 					$newStatus = STATUS_PUBLISHED;
+					break;
+				}
+				if ($publication->getData('status') === STATUS_FINISHED) {
+					$newStatus = STATUS_FINISHED;
 					break;
 				}
 				if ($publication->getData('status') === STATUS_SCHEDULED) {

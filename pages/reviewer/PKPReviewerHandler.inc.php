@@ -110,6 +110,12 @@ class PKPReviewerHandler extends Handler {
 			$reviewerForm->execute();
 			$json = new JSONMessage(true);
 			$json->setEvent('setStep', $step+1);
+
+			HookRegistry::call(strtolower_codesafe(get_class($this)) . '::stepSaved',
+				array($this, $step, $reviewerSubmission, $reviewAssignment, $json));
+
+			// note: JSONMessage constructor call moved before hook call
+
 			return $json;
 		} else {
 			$this->setupTemplate($request);

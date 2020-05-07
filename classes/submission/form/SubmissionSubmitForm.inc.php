@@ -63,6 +63,19 @@ class SubmissionSubmitForm extends Form {
 		$templateMgr->assign('submissionProgress', $submissionProgress);
 		return parent::fetch($request, $template, $display);
 	}
+
+	/**
+	 * Get the next step number based on given step number.
+	 * @param $stepNumber given step number
+	 * @return int the next step number based on the given step number
+	 */
+	protected function getNextStepNumber($stepNumber) {
+		$nextStepNumber = $stepNumber + 1;
+
+		HookRegistry::call('Submission::getNextStepNumber', array($this, $stepNumber, &$nextStepNumber));
+
+		return $nextStepNumber;
+	}
 }
 
 

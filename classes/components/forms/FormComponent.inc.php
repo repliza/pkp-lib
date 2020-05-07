@@ -265,6 +265,11 @@ class FormComponent {
 
 		$fieldsConfig = array_map([$this, 'getFieldConfig'], $this->fields);
 
+		// reindex fields config as array might be changed by hooks and in this case
+		// we need to ensure that this array can be converted to a javascript array with
+		// zero-based index (required by Vue component)
+		$fieldsConfigReindexed = array_values($fieldsConfig);
+
 		$session = \Application::get()->getRequest()->getSession();
 		$csrfToken = $session ? $session->getCSRFToken() : '';
 
@@ -288,7 +293,7 @@ class FormComponent {
 			'id' => $this->id,
 			'method' => $this->method,
 			'action' => $this->action,
-			'fields' => $fieldsConfig,
+			'fields' => $fieldsConfigReindexed,
 			'groups' => $this->groups,
 			'pages' => $this->pages,
 			'primaryLocale' => \AppLocale::getPrimaryLocale(),

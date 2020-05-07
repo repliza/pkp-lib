@@ -651,6 +651,9 @@ abstract class PKPWorkflowHandler extends Handler {
 			case STATUS_PUBLISHED:
 				$lastDecision = 'editor.submission.workflowDecision.submission.published';
 				break;
+			case STATUS_FINISHED:
+				$lastDecision = 'editor.submission.workflowDecision.submission.finished';
+				break;
 			case STATUS_DECLINED:
 				$lastDecision = 'editor.submission.workflowDecision.submission.declined';
 				break;

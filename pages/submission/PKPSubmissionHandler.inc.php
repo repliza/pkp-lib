@@ -22,16 +22,20 @@ abstract class PKPSubmissionHandler extends Handler {
 	 * @copydoc PKPHandler::authorize()
 	 */
 	function authorize($request, &$args, $roleAssignments) {
+		$stepsNumberAndLocaleKeys = $this->getStepsNumberAndLocaleKeys();
+
 		// The policy for the submission handler depends on the
 		// step currently requested.
-		$step = isset($args[0]) ? (int) $args[0] : 1;
-		if ($step<1 || $step>$this->getStepCount()) return false;
+		$step = $this->getStepNumberFromArgs($args, $stepsNumberAndLocaleKeys);
+
+		if (!$this->isStepNumberValid($step, $stepsNumberAndLocaleKeys)) return false;
 
 		// Do we have a submission present in the request?
 		$submissionId = (int)$request->getUserVar('submissionId');
 
 		// Are we in step one without a submission present?
-		if ($step === 1 && $submissionId === 0) {
+		$firstStepNumber = reset($stepsNumberAndLocaleKeys) !== false ? key($stepsNumberAndLocaleKeys) : null;
+		if ($step === $firstStepNumber && $submissionId === 0) {
 			// Authorize submission creation. Author role not required.
 			import('lib.pkp.classes.security.authorization.UserRequiredPolicy');
 			$this->addPolicy(new UserRequiredPolicy($request));
@@ -50,7 +54,7 @@ abstract class PKPSubmissionHandler extends Handler {
 		$submission = $this->getAuthorizedContextObject(ASSOC_TYPE_SUBMISSION);
 
 		// Permit if there is no submission set, but request is for initial step.
-		if (!is_a($submission, 'Submission') && $step == 1) return true;
+		if (!is_a($submission, 'Submission') && $step == $firstStepNumber) return true;
 
 		// In all other cases we expect an authorized submission due to
 		// the submission access policy above.
@@ -58,7 +62,8 @@ abstract class PKPSubmissionHandler extends Handler {
 
 		// Deny if submission is complete (==0 means complete) and at
 		// any step other than the "complete" step (the last one)
-		if ($submission->getSubmissionProgress() == 0 && $step != $this->getStepCount() ) return false;
+		$lastStepNumber = end($stepsNumberAndLocaleKeys) !== false ? key($stepsNumberAndLocaleKeys) : null;
+		if ($submission->getSubmissionProgress() == 0 && $step != $lastStepNumber) return false;
 
 		// Deny if trying to access a step greater than the current progress
 		if ($submission->getSubmissionProgress() != 0 && $step > $submission->getSubmissionProgress()) return false;
@@ -87,7 +92,7 @@ abstract class PKPSubmissionHandler extends Handler {
 	function wizard($args, $request) {
 		$this->setupTemplate($request);
 		$templateMgr = TemplateManager::getManager($request);
-		$step = isset($args[0]) ? (int) $args[0] : 1;
+		$step = $this->getStepNumberFromArgs($args);
 		$templateMgr->assign('step', $step);
 
 		$templateMgr->assign('sectionId', (int) $request->getUserVar('sectionId')); // to add a sectionId parameter to tab links in template
@@ -110,21 +115,24 @@ abstract class PKPSubmissionHandler extends Handler {
 	 * @return JSONMessage JSON object
 	 */
 	function step($args, $request) {
-		$step = isset($args[0]) ? (int) $args[0] : 1;
+		$stepsNumberAndLocaleKeys = $this->getStepsNumberAndLocaleKeys();
+
+		$step = $this->getStepNumberFromArgs($args, $stepsNumberAndLocaleKeys);
 
 		$context = $request->getContext();
 		$submission = $this->getAuthorizedContextObject(ASSOC_TYPE_SUBMISSION);
 
 		$this->setupTemplate($request);
 
-		if ( $step < $this->getStepCount() ) {
+		$lastStepNumber = end($stepsNumberAndLocaleKeys) !== false ? key($stepsNumberAndLocaleKeys) : null;
+		if ( $step < $lastStepNumber ) {
 			$formClass = "SubmissionSubmitStep{$step}Form";
 			import("classes.submission.form.$formClass");
 
 			$submitForm = new $formClass($context, $submission);
 			$submitForm->initData();
 			return new JSONMessage(true, $submitForm->fetch($request));
-		} elseif($step == $this->getStepCount()) {
+		} elseif($step == $lastStepNumber) {
 			$templateMgr = TemplateManager::getManager($request);
 			$templateMgr->assign('context', $context);
 
@@ -152,7 +160,9 @@ abstract class PKPSubmissionHandler extends Handler {
 	 * @return JSONMessage JSON object
 	 */
 	function saveStep($args, $request) {
-		$step = isset($args[0]) ? (int) $args[0] : 1;
+		$stepsNumberAndLocaleKeys = $this->getStepsNumberAndLocaleKeys();
+
+		$step = $this->getStepNumberFromArgs($args, $stepsNumberAndLocaleKeys);
 
 		$router = $request->getRouter();
 		$context = $router->getContext($request);
@@ -168,12 +178,20 @@ abstract class PKPSubmissionHandler extends Handler {
 
 		if (!HookRegistry::call('SubmissionHandler::saveSubmit', array($step, &$submission, &$submitForm))) {
 			if ($submitForm->validate()) {
+				$nextStep = $this->getNextStepNumber($step);
+
 				$submissionId = $submitForm->execute();
+
+				if ($submissionId) {
+					HookRegistry::call(strtolower_codesafe(get_class($this)) . '::stepSaved',
+						array($this, $request, $submissionId, $step));
+				}
+
 				if (!$submission) {
-					return $request->redirectUrlJson($router->url($request, null, null, 'wizard', $step+1, array('submissionId' => $submissionId), 'step-2'));
+					return $request->redirectUrlJson($router->url($request, null, null, 'wizard', $nextStep, array('submissionId' => $submissionId), 'step-2'));
 				}
 				$json = new JSONMessage(true);
-				$json->setEvent('setStep', max($step+1, $submission->getSubmissionProgress()));
+				$json->setEvent('setStep', max($nextStep, $submission->getSubmissionProgress()));
 				return $json;
 			} else {
 				// Provide entered tagit fields values
@@ -217,10 +235,44 @@ abstract class PKPSubmissionHandler extends Handler {
 	abstract function getStepsNumberAndLocaleKeys();
 
 	/**
-	 * Get the number of submission steps.
+	 * Validates a step number.
+	 * @return bool
+	 */
+	private function isStepNumberValid($stepNumber, $stepsNumberAndLocaleKeys) {
+		return array_key_exists($stepNumber, $stepsNumberAndLocaleKeys);
+	}
+
+	/**
+	 * Get the step number from args array.
 	 * @return int
 	 */
-	abstract function getStepCount();
+	private function getStepNumberFromArgs($args, $stepsNumberAndLocaleKeys = null) {
+		if (isset($args[0])) {
+			$stepNumber = (int) $args[0];
+		} else {
+			if (!$stepsNumberAndLocaleKeys)
+				$stepsNumberAndLocaleKeys = $this->getStepsNumberAndLocaleKeys();
+
+			reset($stepsNumberAndLocaleKeys);
+
+			$firstStepNumber = key($stepsNumberAndLocaleKeys);
+
+			$stepNumber = $firstStepNumber;
 }
 
+		return $stepNumber;
+	}
+
+	/**
+	 * Get the next step number based on specified step.
+	 * @return int
+	 */
+	private function getNextStepNumber($stepNumber) {
+		$nextStepNumber = $stepNumber + 1;
+
+		HookRegistry::call('Submission::getNextStepNumber', array($this, $stepNumber, &$nextStepNumber));
+
+		return $nextStepNumber;
+	}
+}
 
