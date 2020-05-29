@@ -32,7 +32,7 @@
 		{/if}
 
 		<a href="{$pageFooterLogoLink}">
-			<img alt="{$pageFooterLogoImgAltText|escape}" src="{$pageFooterLogoImgSrcBaseUrl}/{$pageFooterLogoImgSrcFile}">
+			<img alt="{$pageFooterLogoImgAltText|escape}" src="{$pageFooterLogoImgSrcBaseUrl}/{$pageFooterLogoImgSrcFile}" data-cy="page-footer-logo-img">
 		</a>
 	</div>
 </div>
