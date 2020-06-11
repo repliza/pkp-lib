@@ -48,10 +48,8 @@ class CustomListForm extends Form {
 
 	/**
 	 * Initialize form data from current settings.
-	 * @param $args array
-	 * @param $request PKPRequest
 	 */
-	function initData($args) {
+	function initData() {
 		$request = Application::get()->getRequest();
 		$customListContext = $this->getCustomListContext($request);
 		$customListSetting = $customListContext->getSetting();
@@ -106,8 +104,8 @@ class CustomListForm extends Form {
 		}
 
 		// grid related data
-		$this->_data['gridId'] = $args['gridId'];
-		$this->_data['rowId'] = isset($args['rowId']) ? $args['rowId'] : null;
+		$this->_data['gridId'] = $request->getUserVar('gridId');
+		$this->_data['rowId'] = $request->getUserVar('rowId');
 	}
 
 	/**
@@ -115,7 +113,7 @@ class CustomListForm extends Form {
 	 * @param $request PKPRequest
 	 * @see Form::fetch()
 	 */
-	function fetch($request) {
+	function fetch($request, $template = null, $display = false) {
 		AppLocale::requireComponents(LOCALE_COMPONENT_APP_MANAGER);
 
 		$router = $request->getRouter();
@@ -125,7 +123,7 @@ class CustomListForm extends Form {
 				$customListContext->getRequestArgs()
 			);
 
-		return parent::fetch($request);
+		return parent::fetch($request, $template, $display);
 	}
 
 	/**
